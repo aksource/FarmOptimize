@@ -9,8 +9,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid="FarmOptimize", name="FarmOptimize", version="1.7srg-1",dependencies="required-after:FML")
-//@NetworkMod(clientSideRequired=true, serverSideRequired=false)
+@Mod(modid="FarmOptimize", name="FarmOptimize", version="1.7srg-1",dependencies="required-after:FML", useMetadata = true)
 public class FarmOptimize
 {
 	@Mod.Instance("FarmOptimize")
