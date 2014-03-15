@@ -1,13 +1,17 @@
 package FarmOptimize;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.entity.player.BonemealEvent;
 
 @Mod(modid="FarmOptimize", name="FarmOptimize", version="1.7srg-1",dependencies="required-after:FML", useMetadata = true)
 public class FarmOptimize
@@ -96,93 +100,149 @@ public class FarmOptimize
 		growSpeedVine = config.get(Configuration.CATEGORY_GENERAL, "growSpeedVine", 4, "0:noWait  4:default  -1:noGrow, min = -1, max = 64").getInt();
 		growSpeedVine = (growSpeedVine <-1)?-1:(growSpeedVine>64)?64:growSpeedVine;
 		config.save();
-		if(SugarcaneSpeed != 15 || SugarcaneLimit != 3 || SugarcaneUsefulBonemeal || SugarcaneGrowWater)
-		{
-	    	reed = (new foBlockReed()).setHardness(0.0F).setStepSound(Block.soundTypeGrass).setBlockName("reeds").setBlockTextureName("reeds");
-			if(SugarcaneUsefulBonemeal) MinecraftForge.EVENT_BUS.register((foBlockReed)reed);
-            GameRegistry.registerBlock(reed, null, "reeds", "minecraft");
-		}
-		
-		if(CactusSpeed != 15 || CactusLimit != 3 || CactusUsefulBonemeal)
-		{
-			cactus = (new foBlockCactus()).setHardness(0.4F).setStepSound(Block.soundTypeCloth).setBlockName("cactus").setBlockTextureName("cactus");
-			if(CactusUsefulBonemeal) MinecraftForge.EVENT_BUS.register((foBlockCactus)cactus);
-            GameRegistry.registerBlock(cactus, null, "cactus", "minecraft");
-		}
-		
-		if(growSpeedPunpkin != 100)
-		{
-			pumpkinStem = (new foBlockStem(Blocks.pumpkin)).setHardness(0.0F).setStepSound(Block.soundTypeWood).setBlockName("pumpkinStem").setBlockTextureName("melon_stem");
-            GameRegistry.registerBlock(pumpkinStem, null, "pumpkin_stem", "minecraft");
-		}
-		
-		if(growSpeedWaterMelon != 100)
-		{
-			melonStem = (new foBlockStem(Blocks.melon_block)).setHardness(0.0F).setStepSound(Block.soundTypeWood).setBlockName("pumpkinStem").setBlockTextureName("pumpkin_stem");
-            GameRegistry.registerBlock(melonStem, null, "melon_stem", "minecraft");
-		}
-		
-		if(growSpeedCrops != 100)
-		{
-			crops = (new foBlockCrops()).setBlockName("crops").setBlockTextureName("wheat");
-            GameRegistry.registerBlock(crops, null, "wheat", "minecraft");
-		}
-		
-		if(growSpeedCarrot != 100)
-		{
-			carrot = (new foBlockCarrot()).setBlockName("carrots").setBlockTextureName("carrots");
-            GameRegistry.registerBlock(carrot, null, "carrots", "minecraft");
-		}
-		
-		if(growSpeedPotato != 100)
-		{
-			potato = (new foBlockPotato()).setBlockName("potatoes").setBlockTextureName("potatoes");
-            GameRegistry.registerBlock(potato, null, "potatoes", "minecraft");
-		}
-		
-		if(growSpeedSapling != 7)
-		{
-			sapling = (new foBlockSapling()).setHardness(0.0F).setStepSound(Block.soundTypeGlass).setBlockName("sapling").setBlockTextureName("sapling");
-            GameRegistry.registerBlock(sapling, null, "sapling", "minecraft");
-		}
-		
-		if(MushroomSpeed != 25 || MushroomLimit != 5 || MushroomArea != 4)
-		{
-			mushroomBrown = (new foBlockMushroom()).setHardness(0.2F).setStepSound(Block.soundTypeGrass).setLightLevel(0.125F).setBlockName("mushroom").setBlockTextureName("mushroom_brown");
-            mushroomRed =  (new foBlockMushroom()).setHardness(0.2F).setStepSound(Block.soundTypeGrass).setBlockName("mushroom").setBlockTextureName("mushroom_red");
-            GameRegistry.registerBlock(mushroomBrown, null, "brown_mushroom", "minecraft");
-            GameRegistry.registerBlock(mushroomRed, null, "red_mushroom", "minecraft");
-		}
-		
-		if(growSpeedNetherWart != 10)
-		{
-			netherStalk = (new foBlockNetherStalk()).setBlockName("netherStalk").setBlockTextureName("nether_wart");
-            GameRegistry.registerBlock(netherStalk, null, "nether_wart","minecraft");
-		}
-		
-		if(growSpeedCocoa != 5)
-		{
-			cocoaPlant = (new foBlockCocoa()).setHardness(0.2F).setResistance(5.0F).setStepSound(Block.soundTypeWood).setBlockName("cocoa").setBlockTextureName("cocoa");
-            GameRegistry.registerBlock(cocoaPlant, null, "cocoa", "minecraft");
-		}
-		
-		if(growSpeedVine != 4)
-		{
-			vine = (new foBlockVine()).setHardness(0.2F).setStepSound(Block.soundTypeGrass).setBlockName("vine").setBlockTextureName("vine");
-            GameRegistry.registerBlock(vine, null, "vine", "minecraft");
-		}
+//		if(SugarcaneSpeed != 15 || SugarcaneLimit != 3 || SugarcaneUsefulBonemeal || SugarcaneGrowWater)
+//		{
+//	    	reed = (new foBlockReed()).setHardness(0.0F).setStepSound(Block.soundTypeGrass).setBlockName("reeds").setBlockTextureName("reeds");
+//			if(SugarcaneUsefulBonemeal) MinecraftForge.EVENT_BUS.register((foBlockReed)reed);
+//            GameRegistry.registerBlock(reed, null, "reeds", "minecraft");
+//		}
+//
+//		if(CactusSpeed != 15 || CactusLimit != 3 || CactusUsefulBonemeal)
+//		{
+//			cactus = (new foBlockCactus()).setHardness(0.4F).setStepSound(Block.soundTypeCloth).setBlockName("cactus").setBlockTextureName("cactus");
+//			if(CactusUsefulBonemeal) MinecraftForge.EVENT_BUS.register((foBlockCactus)cactus);
+//            GameRegistry.registerBlock(cactus, null, "cactus", "minecraft");
+//		}
+//
+//		if(growSpeedPunpkin != 100)
+//		{
+//			pumpkinStem = (new foBlockStem(Blocks.pumpkin)).setHardness(0.0F).setStepSound(Block.soundTypeWood).setBlockName("pumpkinStem").setBlockTextureName("melon_stem");
+//            GameRegistry.registerBlock(pumpkinStem, null, "pumpkin_stem", "minecraft");
+//		}
+//
+//		if(growSpeedWaterMelon != 100)
+//		{
+//			melonStem = (new foBlockStem(Blocks.melon_block)).setHardness(0.0F).setStepSound(Block.soundTypeWood).setBlockName("pumpkinStem").setBlockTextureName("pumpkin_stem");
+//            GameRegistry.registerBlock(melonStem, null, "melon_stem", "minecraft");
+//		}
+//
+//		if(growSpeedCrops != 100)
+//		{
+//			crops = (new foBlockCrops()).setBlockName("crops").setBlockTextureName("wheat");
+//            GameRegistry.registerBlock(crops, null, "wheat", "minecraft");
+//		}
+//
+//		if(growSpeedCarrot != 100)
+//		{
+//			carrot = (new foBlockCarrot()).setBlockName("carrots").setBlockTextureName("carrots");
+//            GameRegistry.registerBlock(carrot, null, "carrots", "minecraft");
+//		}
+//
+//		if(growSpeedPotato != 100)
+//		{
+//			potato = (new foBlockPotato()).setBlockName("potatoes").setBlockTextureName("potatoes");
+//            GameRegistry.registerBlock(potato, null, "potatoes", "minecraft");
+//		}
+//
+//		if(growSpeedSapling != 7)
+//		{
+//			sapling = (new foBlockSapling()).setHardness(0.0F).setStepSound(Block.soundTypeGlass).setBlockName("sapling").setBlockTextureName("sapling");
+//            GameRegistry.registerBlock(sapling, null, "sapling", "minecraft");
+//		}
+//
+//		if(MushroomSpeed != 25 || MushroomLimit != 5 || MushroomArea != 4)
+//		{
+//			mushroomBrown = (new foBlockMushroom()).setHardness(0.2F).setStepSound(Block.soundTypeGrass).setLightLevel(0.125F).setBlockName("mushroom").setBlockTextureName("mushroom_brown");
+//            mushroomRed =  (new foBlockMushroom()).setHardness(0.2F).setStepSound(Block.soundTypeGrass).setBlockName("mushroom").setBlockTextureName("mushroom_red");
+//            GameRegistry.registerBlock(mushroomBrown, null, "brown_mushroom", "minecraft");
+//            GameRegistry.registerBlock(mushroomRed, null, "red_mushroom", "minecraft");
+//		}
+//
+//		if(growSpeedNetherWart != 10)
+//		{
+//			netherStalk = (new foBlockNetherStalk()).setBlockName("netherStalk").setBlockTextureName("nether_wart");
+//            GameRegistry.registerBlock(netherStalk, null, "nether_wart","minecraft");
+//		}
+//
+//		if(growSpeedCocoa != 5)
+//		{
+//			cocoaPlant = (new foBlockCocoa()).setHardness(0.2F).setResistance(5.0F).setStepSound(Block.soundTypeWood).setBlockName("cocoa").setBlockTextureName("cocoa");
+//            GameRegistry.registerBlock(cocoaPlant, null, "cocoa", "minecraft");
+//		}
+//
+//		if(growSpeedVine != 4)
+//		{
+//			vine = (new foBlockVine()).setHardness(0.2F).setStepSound(Block.soundTypeGrass).setBlockName("vine").setBlockTextureName("vine");
+//            GameRegistry.registerBlock(vine, null, "vine", "minecraft");
+//		}
 	}
 	@Mod.EventHandler
 	public void load(FMLInitializationEvent event)
 	{
 		if(SugarcaneSpeed != 15 || SugarcaneLimit != 3 || SugarcaneUsefulBonemeal || SugarcaneGrowWater)
 		{
-			if(SugarcaneUsefulBonemeal) MinecraftForge.EVENT_BUS.register((foBlockReed)reed);
+			if(SugarcaneUsefulBonemeal) MinecraftForge.EVENT_BUS.register(this);
 		}
 		
 		if(CactusSpeed != 15 || CactusLimit != 3 || CactusUsefulBonemeal)
 		{
-			if(CactusUsefulBonemeal) MinecraftForge.EVENT_BUS.register((foBlockCactus)cactus);
+			if(CactusUsefulBonemeal) MinecraftForge.EVENT_BUS.register(this);
 		}
 	}
+
+    @SubscribeEvent
+    public void useBonemealToReeds(BonemealEvent event)
+    {
+        if(!event.world.isRemote && event.block == Blocks.reeds && Blocks.reeds.canBlockStay(event.world, event.x, event.y, event.z))
+        {
+            int size;
+            for (size = event.y; Blocks.reeds.canBlockStay(event.world, event.x, size, event.z); --size)
+            {
+                ;
+            }
+            int min = size + 1;
+            int top = 0;
+            for (size = min; (size - min + 1) < FarmOptimize.SugarcaneUsedBonemealLimit; size++)
+            {
+                if(isGrow(event.world, event.x, size, event.z))
+                {
+                    event.world.setBlock(event.x, size + 1, event.z, Blocks.reeds,0,3);
+                    top++;
+                }
+            }
+            if(top > 0)
+            {
+                event.setResult(Event.Result.ALLOW);
+            }
+        }
+
+        if(!event.world.isRemote && event.block == Blocks.cactus && Blocks.cactus.canBlockStay(event.world, event.x, event.y, event.z))
+        {
+            int size;
+            for (size = event.y; Blocks.cactus.canBlockStay(event.world, event.x, size, event.z); --size)
+            {
+                ;
+            }
+            int min = size + 1;
+            int top = 0;
+            for (size = min; (size - min + 1) < FarmOptimize.CactusUsedBonemealLimit; size++)
+            {
+                if(event.world.isAirBlock(event.x, size + 1, event.z))
+                {
+                    event.world.setBlock(event.x, size + 1, event.z, Blocks.cactus,0,3);
+                    top++;
+                }
+            }
+            if(top > 0)
+            {
+                event.setResult(Event.Result.ALLOW);
+            }
+        }
+    }
+
+    private boolean isGrow(World par1World, int par2, int par3, int par4)
+    {
+        return par1World.isAirBlock(par2, par3 + 1, par4) || FarmOptimize.SugarcaneGrowWater
+                && par1World.getBlock(par2, par3 + 1, par4).getMaterial().equals(Material.water);
+    }
 }
