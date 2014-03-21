@@ -11,14 +11,13 @@ import java.util.Map;
  */
 @IFMLLoadingPlugin.MCVersion("1.7.2")
 public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
-    static File location;
 
     public static int SugarcaneSpeed;
     public static int SugarcaneLimit;
     public static boolean SugarcaneGrowWater;
     public static int CactusSpeed;
     public static int CactusLimit;
-    public static int growSpeedPunpkin;
+    public static int growSpeedPumpkin;
     public static int growSpeedWaterMelon;
     public static int growSpeedCrops;
     public static int growSpeedCarrot;
@@ -33,7 +32,17 @@ public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[]{""};
+        return new String[]{
+                "FarmOptimize.asm.BlockCactusTransformer",
+                "FarmOptimize.asm.BlockCocoaTransformer",
+                "FarmOptimize.asm.BlockCropsTransformer",
+                "FarmOptimize.asm.BlockMushroomTransformer",
+                "FarmOptimize.asm.BlockNetherWartTransformer",
+                "FarmOptimize.asm.BlockReedTransformer",
+                "FarmOptimize.asm.BlockSaplingTransformer",
+                "FarmOptimize.asm.BlockStemTransformer",
+                "FarmOptimize.asm.BlockVineTransformer"
+        };
     }
 
     @Override
@@ -69,8 +78,8 @@ public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
         CactusSpeed = (CactusSpeed <0)?0:(CactusSpeed>15)?15:CactusSpeed;
         CactusLimit = config.get(Configuration.CATEGORY_GENERAL, "CactusLimit", 3, "min = 1, max = 250").getInt();
         CactusLimit = (CactusLimit < 1) ? 1: (CactusLimit > 250)?250:CactusLimit;
-        growSpeedPunpkin = config.get(Configuration.CATEGORY_GENERAL, "growSpeedPunpkin", 100, "0:noWait  1:fast  100:default, min = 0, max = 100").getInt();
-        growSpeedPunpkin = (growSpeedPunpkin <0)?0:(growSpeedPunpkin>100)?100:growSpeedPunpkin;
+        growSpeedPumpkin = config.get(Configuration.CATEGORY_GENERAL, "growSpeedPumpkin", 100, "0:noWait  1:fast  100:default, min = 0, max = 100").getInt();
+        growSpeedPumpkin = (growSpeedPumpkin <0)?0:(growSpeedPumpkin >100)?100: growSpeedPumpkin;
         growSpeedWaterMelon = config.get(Configuration.CATEGORY_GENERAL, "growSpeedWaterMelon", 100, "0:noWait  1:fast  100:default, min = 0, max = 100").getInt();
         growSpeedWaterMelon = (growSpeedWaterMelon <0)?0:(growSpeedWaterMelon>100)?100:growSpeedWaterMelon;
         growSpeedCrops = config.get(Configuration.CATEGORY_GENERAL, "growSpeedCrops", 100, "0:noWait  1:fast  100:default, min = 0, max = 100").getInt();
@@ -79,17 +88,17 @@ public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
         growSpeedCarrot = (growSpeedCarrot <0)?0:(growSpeedCarrot>100)?100:growSpeedCarrot;
         growSpeedPotato = config.get(Configuration.CATEGORY_GENERAL, "growSpeedPotato", 100, "0:noWait  1:fast  100:default, min = 0, max = 100").getInt();
         growSpeedPotato = (growSpeedPotato <0)?0:(growSpeedPotato>100)?100:growSpeedPotato;
-        growSpeedSapling = config.get(Configuration.CATEGORY_GENERAL, "growSpeedSapling", 7, "0:noWait  1:fast  100:default, min = 0, max = 7").getInt();
+        growSpeedSapling = config.get(Configuration.CATEGORY_GENERAL, "growSpeedSapling", 7, "0:noWait  1:fast  7:default, min = 0, max = 7").getInt();
         growSpeedSapling = (growSpeedSapling <0)?0:(growSpeedSapling>7)?7:growSpeedSapling;
-        MushroomSpeed = config.get(Configuration.CATEGORY_GENERAL, "MushroomSpeed", 25, "0:noWait  1:fast  100:default, min = 0, max = 25").getInt();
+        MushroomSpeed = config.get(Configuration.CATEGORY_GENERAL, "MushroomSpeed", 25, "0:noWait  1:fast  25:default, min = 0, max = 25").getInt();
         MushroomSpeed = (MushroomSpeed <0)?0:(MushroomSpeed>25)?25:MushroomSpeed;
         MushroomLimit = config.get(Configuration.CATEGORY_GENERAL, "MushroomLimit", 5, "area in mushroomLimit  5:default, min = 1, max = 81").getInt();
         MushroomLimit = (MushroomLimit <1)?1:(MushroomLimit>81)?81:MushroomLimit;
-        MushroomArea = (byte) config.get(Configuration.CATEGORY_GENERAL, "MushroomArea", 4, "mushroom search area  4:default, min = 0, max = 4").getInt();
+        MushroomArea = (byte)config.get(Configuration.CATEGORY_GENERAL, "MushroomArea", 4, "mushroom search area  4:default, min = 0, max = 4").getInt();
         MushroomArea = (MushroomArea <0)?0:(MushroomArea>4)?4:MushroomArea;
-        growSpeedNetherWart = config.get(Configuration.CATEGORY_GENERAL, "growSpeedNetherWart", 10, "0:noWait  1:fast  100:default, min = 0, max = 10").getInt();
+        growSpeedNetherWart = config.get(Configuration.CATEGORY_GENERAL, "growSpeedNetherWart", 10, "0:noWait  1:fast  10:default, min = 0, max = 10").getInt();
         growSpeedNetherWart = (growSpeedNetherWart <0)?0:(growSpeedNetherWart>10)?10:growSpeedNetherWart;
-        growSpeedCocoa = config.get(Configuration.CATEGORY_GENERAL, "growSpeedCocoa", 5, "0:noWait  1:fast  100:default, min = 0, max = 5").getInt();
+        growSpeedCocoa = config.get(Configuration.CATEGORY_GENERAL, "growSpeedCocoa", 5, "0:noWait  1:fast  5:default, min = 0, max = 5").getInt();
         growSpeedCocoa = (growSpeedCocoa <0)?0:(growSpeedCocoa>5)?5:growSpeedCocoa;
         growSpeedVine = config.get(Configuration.CATEGORY_GENERAL, "growSpeedVine", 4, "0:noWait  4:default  -1:noGrow, min = -1, max = 64").getInt();
         growSpeedVine = (growSpeedVine <-1)?-1:(growSpeedVine>64)?64:growSpeedVine;

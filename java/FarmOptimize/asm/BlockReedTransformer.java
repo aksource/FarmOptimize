@@ -8,13 +8,11 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import java.util.List;
-
 /**
  * Created by A.K. on 14/03/15.
  */
-public class BlockCactusTransformer implements IClassTransformer, Opcodes{
-    private static final String TARGET_CLASS_NAME = "net.minecraft.block.BlockCactus";
+public class BlockReedTransformer implements IClassTransformer,Opcodes{
+    private static final String TARGET_CLASS_NAME = "net.minecraft.block.BlockReed";
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
@@ -23,7 +21,7 @@ public class BlockCactusTransformer implements IClassTransformer, Opcodes{
             basicClass = changeConst(basicClass, name);
             System.out.println("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
-            throw new RuntimeException("failed : BlockCactusTransformer loading", e);
+            throw new RuntimeException("failed : BlockReedTransformer loading", e);
         }
         return basicClass;
     }
@@ -34,8 +32,10 @@ public class BlockCactusTransformer implements IClassTransformer, Opcodes{
         reader.accept(cnode, 0);
         String targetMethodName = "func_149674_a";//updateTick
         MethodNode mnode = null;
-        for (MethodNode curMnode :cnode.methods) {
-            if (targetMethodName.equals(FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(owner, curMnode.name, curMnode.desc))) {
+        for (MethodNode curMnode :cnode.methods)
+        {
+            if (targetMethodName.equals(FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(owner, curMnode.name, curMnode.desc)))
+            {
                 mnode = curMnode;
                 break;
             }
@@ -43,14 +43,14 @@ public class BlockCactusTransformer implements IClassTransformer, Opcodes{
         if (mnode != null)
         {
             System.out.println("transform updateTick Method");
-            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(31);
-            AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "CactusLimit", "I");
+            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(50);
+            AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "SugarcaneLimit", "I");
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
-            AbstractInsnNode oldInsnNode2 = mnode.instructions.get(44);
-            AbstractInsnNode newInsnNode2 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "CactusSpeed", "I");
+            AbstractInsnNode oldInsnNode2 = mnode.instructions.get(63);
+            AbstractInsnNode newInsnNode2 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "SugarcaneSpeed", "I");
             mnode.instructions.set(oldInsnNode2, newInsnNode2);
-            AbstractInsnNode oldInsnNode3 = mnode.instructions.get(45);
-            AbstractInsnNode label = mnode.instructions.get(79);
+            AbstractInsnNode oldInsnNode3 = mnode.instructions.get(64);
+            AbstractInsnNode label = mnode.instructions.get(87);
             AbstractInsnNode newInsnNode3 = new JumpInsnNode(IF_ICMPLT, (LabelNode)label);
             mnode.instructions.set(oldInsnNode3, newInsnNode3);
 
