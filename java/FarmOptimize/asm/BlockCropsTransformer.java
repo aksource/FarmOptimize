@@ -19,9 +19,9 @@ public class BlockCropsTransformer implements IClassTransformer, Opcodes{
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
         try {
-            System.out.println("Start " + TARGET_CLASS_NAME + " transform");
+            FarmOptimizeCorePlugin.logger.info("Start " + TARGET_CLASS_NAME + " transform");
             basicClass = changeConst(basicClass, name);
-            System.out.println("Finish " + TARGET_CLASS_NAME + " transform");
+            FarmOptimizeCorePlugin.logger.info("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
             throw new RuntimeException("failed : BlockCropsTransformer loading", e);
         }
@@ -44,7 +44,7 @@ public class BlockCropsTransformer implements IClassTransformer, Opcodes{
         }
         if (mnode != null)
         {
-            System.out.println("transform updateTick Method");
+            FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
             AbstractInsnNode oldInsnNode1 = mnode.instructions.get(45);
             AbstractInsnNode newInsnNode1 = new LdcInsnNode(0.25F);
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
