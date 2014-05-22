@@ -12,7 +12,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 
-@Mod(modid="FarmOptimize", name="FarmOptimize", version="1.7srg-1",dependencies="required-after:FML", useMetadata = true)
+@Mod(modid="FarmOptimize", name="FarmOptimize", version="1.7srg-2",dependencies="required-after:FML", useMetadata = true)
 public class FarmOptimize
 {
 	@Mod.Instance("FarmOptimize")

@@ -49,7 +49,7 @@ public class BlockCropsTransformer implements IClassTransformer, Opcodes{
             AbstractInsnNode newInsnNode1 = new LdcInsnNode(0.25F);
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
 
-            LabelNode labelNode = (LabelNode)mnode.instructions.get(42);
+            LabelNode labelNode = (LabelNode)mnode.instructions.get(53);
             InsnList insnList = new InsnList();
             insnList.add(new VarInsnNode(ALOAD, 0));
             insnList.add(new MethodInsnNode(INVOKESTATIC, "FarmOptimize/asm/BlockCropsTransformer", "getCropsGrowSpeed", "(Lnet/minecraft/block/BlockCrops;)I"));

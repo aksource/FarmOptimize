@@ -17,7 +17,7 @@ public class FarmOptimizeCoreModContainer extends DummyModContainer{
         ModMetadata meta = getMetadata();
         meta.modId = "FarmOptimizeCore";
         meta.name = "FarmOptimizeCore";
-        meta.version = "1.0.0";
+        meta.version = "1.0.1";
         meta.authorList = Arrays.asList("takanasayo", "A.K.");
         meta.description = "Optimize Growable Block ";
         meta.url = "";
