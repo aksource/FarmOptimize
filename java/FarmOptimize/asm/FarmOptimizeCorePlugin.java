@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 /**
  * Created by A.K. on 14/03/15.
  */
-@IFMLLoadingPlugin.MCVersion("1.7.2")
 public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
 
     public static int SugarcaneSpeed;
