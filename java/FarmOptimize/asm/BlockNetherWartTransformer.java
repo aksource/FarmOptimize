@@ -49,7 +49,7 @@ public class BlockNetherWartTransformer implements IClassTransformer, Opcodes{
 
             InsnList insnList = new InsnList();
             insnList.add(new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedNetherWart", "I"));
-            LabelNode label = (LabelNode)mnode.instructions.get(20);
+            LabelNode label = (LabelNode)mnode.instructions.get(17);
             insnList.add(new JumpInsnNode(IFEQ, label));
             mnode.instructions.insert(mnode.instructions.get(12), insnList);
 
