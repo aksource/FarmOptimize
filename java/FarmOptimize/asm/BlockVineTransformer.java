@@ -1,7 +1,7 @@
 package FarmOptimize.asm;
 
-import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -30,7 +30,7 @@ public class BlockVineTransformer implements IClassTransformer, Opcodes{
         ClassNode cnode = new ClassNode();
         ClassReader reader = new ClassReader(bytes);
         reader.accept(cnode, 0);
-        String targetMethodName = "func_149674_a";//updateTick
+        String targetMethodName = FarmOptimizeCorePlugin.updateTickMethodObfName;//updateTick
         MethodNode mnode = null;
         for (MethodNode curMnode :cnode.methods)
         {
@@ -43,15 +43,15 @@ public class BlockVineTransformer implements IClassTransformer, Opcodes{
         if (mnode != null)
         {
             FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
-            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(7);
+            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(9/*7*/);//ICONST_4
             AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedVine", "I");
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
 
             InsnList insnList = new InsnList();
             insnList.add(new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedVine", "I"));
-            LabelNode label = (LabelNode)mnode.instructions.get(10);
+            LabelNode label = (LabelNode)mnode.instructions.get(12/*10*/);//Label 3
             insnList.add(new JumpInsnNode(IFEQ, label));
-            mnode.instructions.insert(mnode.instructions.get(4), insnList);
+            mnode.instructions.insert(mnode.instructions.get(6/*4*/), insnList);//After LINENUMBER
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
             cnode.accept(cw);

@@ -1,8 +1,8 @@
 package FarmOptimize.asm;
 
-import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -30,7 +30,7 @@ public class BlockCocoaTransformer implements IClassTransformer, Opcodes{
         ClassNode cnode = new ClassNode();
         ClassReader reader = new ClassReader(bytes);
         reader.accept(cnode, 0);
-        String targetMethodName = "func_149674_a";//updateTick
+        String targetMethodName = FarmOptimizeCorePlugin.updateTickMethodObfName;//updateTick
         MethodNode mnode = null;
         for (MethodNode curMnode :cnode.methods)
         {
@@ -43,15 +43,15 @@ public class BlockCocoaTransformer implements IClassTransformer, Opcodes{
         if (mnode != null)
         {
             FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
-            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(41);
+            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(21);//ICONST_5
             AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedCocoa", "I");
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
 
             InsnList insnList = new InsnList();
             insnList.add(new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedCocoa", "I"));
-            LabelNode label = (LabelNode)mnode.instructions.get(44);
+            LabelNode label = (LabelNode)mnode.instructions.get(24);//Label 4
             insnList.add(new JumpInsnNode(IFEQ, label));
-            mnode.instructions.insert(mnode.instructions.get(38), insnList);
+            mnode.instructions.insert(mnode.instructions.get(19), insnList);//After Frame Same
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
             cnode.accept(cw);

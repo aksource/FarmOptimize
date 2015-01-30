@@ -1,9 +1,9 @@
 package FarmOptimize.asm;
 
 import com.google.common.eventbus.EventBus;
-import cpw.mods.fml.common.DummyModContainer;
-import cpw.mods.fml.common.LoadController;
-import cpw.mods.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.DummyModContainer;
+import net.minecraftforge.fml.common.LoadController;
+import net.minecraftforge.fml.common.ModMetadata;
 
 import java.util.Arrays;
 
@@ -17,7 +17,7 @@ public class FarmOptimizeCoreModContainer extends DummyModContainer{
         ModMetadata meta = getMetadata();
         meta.modId = "FarmOptimizeCore";
         meta.name = "FarmOptimizeCore";
-        meta.version = "1.0.1";
+        meta.version = "1.0.2";
         meta.authorList = Arrays.asList("takanasayo", "A.K.");
         meta.description = "Optimize Growable Block ";
         meta.url = "";

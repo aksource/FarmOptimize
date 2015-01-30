@@ -1,7 +1,7 @@
 package FarmOptimize.asm;
 
-import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -30,7 +30,7 @@ public class BlockCactusTransformer implements IClassTransformer, Opcodes{
         ClassNode cnode = new ClassNode();
         ClassReader reader = new ClassReader(bytes);
         reader.accept(cnode, 0);
-        String targetMethodName = "func_149674_a";//updateTick
+        String targetMethodName = FarmOptimizeCorePlugin.updateTickMethodObfName;//updateTick
         MethodNode mnode = null;
         for (MethodNode curMnode :cnode.methods) {
             if (targetMethodName.equals(FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(owner, curMnode.name, curMnode.desc))) {

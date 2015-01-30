@@ -1,7 +1,7 @@
 package FarmOptimize.asm;
 
-import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraft.block.BlockStem;
 import net.minecraft.init.Blocks;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -32,7 +32,7 @@ public class BlockStemTransformer implements IClassTransformer, Opcodes{
         ClassNode cnode = new ClassNode();
         ClassReader reader = new ClassReader(bytes);
         reader.accept(cnode, 0);
-        String targetMethodName = "func_149674_a";//updateTick
+        String targetMethodName = FarmOptimizeCorePlugin.updateTickMethodObfName;//updateTick
         MethodNode mnode = null;
         for (MethodNode curMnode :cnode.methods)
         {
@@ -45,11 +45,11 @@ public class BlockStemTransformer implements IClassTransformer, Opcodes{
         if (mnode != null)
         {
             FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
-            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(32);
+            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(26/*32*/);//LDC 25.0
             AbstractInsnNode newInsnNode1 = new LdcInsnNode(0.25F);
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
 
-            LabelNode labelNode = (LabelNode)mnode.instructions.get(40);
+            LabelNode labelNode = (LabelNode)mnode.instructions.get(34/*40*/);//Label 5
             InsnList insnList = new InsnList();
             insnList.add(new VarInsnNode(ILOAD, 7));
             insnList.add(new InsnNode(I2F));
@@ -58,12 +58,12 @@ public class BlockStemTransformer implements IClassTransformer, Opcodes{
 
             InsnList insnList3 = new InsnList();
             insnList3.add(new VarInsnNode(ALOAD, 0));
-            insnList3.add(new MethodInsnNode(INVOKESTATIC, "FarmOptimize/asm/BlockStemTransformer", "getStemGrowSpeed", "(Lnet/minecraft/block/BlockStem;)I"));
+            insnList3.add(new MethodInsnNode(INVOKESTATIC, "FarmOptimize/asm/BlockStemTransformer", "getStemGrowSpeed", "(Lnet/minecraft/block/BlockStem;)I", false));
             insnList3.add(new VarInsnNode(ISTORE, 7));
             insnList3.add(new VarInsnNode(ILOAD, 7));
             insnList3.add(new JumpInsnNode(IFEQ, labelNode));
-            mnode.instructions.insert(mnode.instructions.get(34), insnList);
-            mnode.instructions.insert(mnode.instructions.get(30), insnList3);
+            mnode.instructions.insert(mnode.instructions.get(28/*34*/), insnList);//After FDIV
+            mnode.instructions.insert(mnode.instructions.get(24/*30*/), insnList3);//After LINENUMBER
 
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);

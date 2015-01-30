@@ -1,7 +1,7 @@
 package FarmOptimize.asm;
 
-import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -30,7 +30,7 @@ public class BlockReedTransformer implements IClassTransformer,Opcodes{
         ClassNode cnode = new ClassNode();
         ClassReader reader = new ClassReader(bytes);
         reader.accept(cnode, 0);
-        String targetMethodName = "func_149674_a";//updateTick
+        String targetMethodName = FarmOptimizeCorePlugin.updateTickMethodObfName;//updateTick
         MethodNode mnode = null;
         for (MethodNode curMnode :cnode.methods)
         {
@@ -43,14 +43,14 @@ public class BlockReedTransformer implements IClassTransformer,Opcodes{
         if (mnode != null)
         {
             FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
-            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(50);
+            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(43/*50*/);//ICONST_3
             AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "SugarcaneLimit", "I");
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
-            AbstractInsnNode oldInsnNode2 = mnode.instructions.get(63);
+            AbstractInsnNode oldInsnNode2 = mnode.instructions.get(56/*63*/);//BIPUSH 15
             AbstractInsnNode newInsnNode2 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "SugarcaneSpeed", "I");
             mnode.instructions.set(oldInsnNode2, newInsnNode2);
-            AbstractInsnNode oldInsnNode3 = mnode.instructions.get(64);
-            AbstractInsnNode label = mnode.instructions.get(87);
+            AbstractInsnNode oldInsnNode3 = mnode.instructions.get(57/*64*/);//IF_ICMPNE
+            AbstractInsnNode label = mnode.instructions.get(80/*87*/);//label 8
             AbstractInsnNode newInsnNode3 = new JumpInsnNode(IF_ICMPLT, (LabelNode)label);
             mnode.instructions.set(oldInsnNode3, newInsnNode3);
 

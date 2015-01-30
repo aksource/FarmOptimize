@@ -1,16 +1,18 @@
 package FarmOptimize;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.Event;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod(modid="FarmOptimize", name="FarmOptimize", version="@VERSION@",dependencies="required-after:FML", useMetadata = true)
 public class FarmOptimize
@@ -108,10 +110,16 @@ public class FarmOptimize
 //
 //		if(CactusSpeed != 15 || CactusLimit != 3 || CactusUsefulBonemeal)
 //		{
-//			cactus = (new foBlockCactus()).setHardness(0.4F).setStepSound(Block.soundTypeCloth).setBlockName("cactus").setBlockTextureName("cactus");
+//			cactus = (new BlockCactusCustom()).setHardness(0.4F).setStepSound(Block.soundTypeCloth).setUnlocalizedName("cactus");
+//            GameRegistry.registerBlock(cactus, "cactus");
 //			if(CactusUsefulBonemeal) MinecraftForge.EVENT_BUS.register((foBlockCactus)cactus);
-//            GameRegistry.registerBlock(cactus, null, "cactus", "minecraft");
-//		}
+//            try {
+//                GameRegistry.addSubstitutionAlias("cactus", GameRegistry.Type.BLOCK, cactus);
+//
+//            } catch (ExistingSubstitutionException e) {
+//                e.printStackTrace();
+//            }
+//        }
 //
 //		if(growSpeedPumpkin != 100)
 //		{
@@ -185,17 +193,17 @@ public class FarmOptimize
 		
 		if(CactusUsefulBonemeal)
 		{
-			if(CactusUsefulBonemeal) MinecraftForge.EVENT_BUS.register(this);
+			MinecraftForge.EVENT_BUS.register(this);
 		}
 	}
 
     @SubscribeEvent
     public void useBonemealToReeds(BonemealEvent event)
     {
-        if(!event.world.isRemote && event.block == Blocks.reeds && Blocks.reeds.canBlockStay(event.world, event.x, event.y, event.z))
+        if(!event.world.isRemote && event.block == Blocks.reeds && Blocks.reeds.func_176354_d/*canBlockStay*/(event.world, event.pos))
         {
             int size;
-            for (size = event.y; Blocks.reeds.canBlockStay(event.world, event.x, size, event.z); --size)
+            for (size = 0; Blocks.reeds.func_176354_d/*canBlockStay*/(event.world, event.pos.offset(EnumFacing.DOWN, size)); --size)
             {
                 ;
             }
@@ -203,9 +211,9 @@ public class FarmOptimize
             int top = 0;
             for (size = min; (size - min + 1) < FarmOptimize.SugarcaneUsedBonemealLimit; size++)
             {
-                if(isGrow(event.world, event.x, size, event.z))
+                if(isGrow(event.world, event.pos.offset(EnumFacing.UP, size)))
                 {
-                    event.world.setBlock(event.x, size + 1, event.z, Blocks.reeds,0,3);
+                    event.world.setBlockState(event.pos.offset(EnumFacing.UP, size + 1), Blocks.reeds.getDefaultState(), 3);
                     top++;
                 }
             }
@@ -215,10 +223,10 @@ public class FarmOptimize
             }
         }
 
-        if(!event.world.isRemote && event.block == Blocks.cactus && Blocks.cactus.canBlockStay(event.world, event.x, event.y, event.z))
+        if(!event.world.isRemote && event.block == Blocks.cactus && Blocks.cactus.canBlockStay(event.world, event.pos))
         {
             int size;
-            for (size = event.y; Blocks.cactus.canBlockStay(event.world, event.x, size, event.z); --size)
+            for (size = 0; Blocks.cactus.canBlockStay(event.world, event.pos.offset(EnumFacing.UP, size)); --size)
             {
                 ;
             }
@@ -226,9 +234,9 @@ public class FarmOptimize
             int top = 0;
             for (size = min; (size - min + 1) < FarmOptimize.CactusUsedBonemealLimit; size++)
             {
-                if(event.world.isAirBlock(event.x, size + 1, event.z))
+                if(event.world.isAirBlock(event.pos.offset(EnumFacing.UP, size + 1)/*event.x, size + 1, event.z*/))
                 {
-                    event.world.setBlock(event.x, size + 1, event.z, Blocks.cactus,0,3);
+                    event.world.setBlockState(event.pos.offset(EnumFacing.UP, size + 1), Blocks.cactus.getDefaultState(), 3);
                     top++;
                 }
             }
@@ -239,9 +247,9 @@ public class FarmOptimize
         }
     }
 
-    private boolean isGrow(World par1World, int par2, int par3, int par4)
+    private boolean isGrow(World par1World, BlockPos blockPos)
     {
-        return par1World.isAirBlock(par2, par3 + 1, par4) || FarmOptimize.SugarcaneGrowWater
-                && par1World.getBlock(par2, par3 + 1, par4).getMaterial().equals(Material.water);
+        return par1World.isAirBlock(blockPos.offset(EnumFacing.UP)) || FarmOptimize.SugarcaneGrowWater
+                && par1World.getBlockState(blockPos.offset(EnumFacing.UP)).getBlock().getMaterial().equals(Material.water);
     }
 }
