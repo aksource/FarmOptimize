@@ -3,9 +3,7 @@ package FarmOptimize.asm;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
 /**
@@ -18,7 +16,10 @@ public class BlockCactusTransformer implements IClassTransformer, Opcodes{
         if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
         try {
             FarmOptimizeCorePlugin.logger.info("Start " + TARGET_CLASS_NAME + " transform");
-            basicClass = changeConst(basicClass, name);
+            ClassReader classReader = new ClassReader(basicClass);
+            ClassWriter classWriter = new ClassWriter(1);
+            classReader.accept(new CustomVisitor(name,classWriter), 8);
+//            basicClass = changeConst(basicClass, name);
             FarmOptimizeCorePlugin.logger.info("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
             throw new RuntimeException("failed : BlockCactusTransformer loading", e);
@@ -41,13 +42,13 @@ public class BlockCactusTransformer implements IClassTransformer, Opcodes{
         if (mnode != null)
         {
             FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
-            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(31);
+            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(31);//ICONST_3
             AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "CactusLimit", "I");
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
-            AbstractInsnNode oldInsnNode2 = mnode.instructions.get(44);
+            AbstractInsnNode oldInsnNode2 = mnode.instructions.get(44);//BIPUSH 15
             AbstractInsnNode newInsnNode2 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "CactusSpeed", "I");
             mnode.instructions.set(oldInsnNode2, newInsnNode2);
-            AbstractInsnNode oldInsnNode3 = mnode.instructions.get(45);
+            AbstractInsnNode oldInsnNode3 = mnode.instructions.get(45);//IF_ICMPNE L8
             AbstractInsnNode label = mnode.instructions.get(79);
             AbstractInsnNode newInsnNode3 = new JumpInsnNode(IF_ICMPLT, (LabelNode)label);
             mnode.instructions.set(oldInsnNode3, newInsnNode3);
@@ -58,5 +59,61 @@ public class BlockCactusTransformer implements IClassTransformer, Opcodes{
         }
 
         return bytes;
+    }
+    class CustomVisitor extends ClassVisitor {
+        String owner;
+        public CustomVisitor(String name, ClassVisitor cv) {
+            super(ASM5, cv);
+            owner = name;
+        }
+
+        @Override
+        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+            String deobfMethodName = FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(owner, name, desc);
+            if (deobfMethodName.equals(FarmOptimizeCorePlugin.updateTickMethodObfName)
+                    || deobfMethodName.equals(FarmOptimizeCorePlugin.updateTickMethodDeobfName)) {
+                return new CustomMethodVisitor(this.api, super.visitMethod(access, name, desc, signature, exceptions));
+            }
+            return super.visitMethod(access, name, desc, signature, exceptions);
+        }
+    }
+
+    class CustomMethodVisitor extends MethodVisitor {
+        public CustomMethodVisitor(int api, MethodVisitor mv) {
+            super(api, mv);
+        }
+
+        boolean bipush15 = false;
+        boolean const3 = false;
+        boolean icmpne = false;
+        @Override
+        public void visitIntInsn(int opcode, int operand) {
+            if (opcode == BIPUSH) {
+                if (operand == 15 && !bipush15) {
+                    bipush15 = true;
+                    super.visitFieldInsn(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "CactusSpeed", "I");
+                }
+            } else {
+                super.visitIntInsn(opcode, operand);
+            }
+        }
+
+        @Override
+        public void visitInsn(int opcode) {
+            if (opcode == ICONST_3 && !const3) {
+                const3 = true;
+                super.visitFieldInsn(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "CactusLimit", "I");
+                return;
+            }
+            super.visitInsn(opcode);
+        }
+
+        @Override
+        public void visitJumpInsn(int opcode, Label label) {
+            if (opcode == IF_ICMPNE && !icmpne) {
+                super.visitJumpInsn(IF_ICMPLT, label);
+            }
+            super.visitJumpInsn(opcode, label);
+        }
     }
 }

@@ -3,9 +3,7 @@ package FarmOptimize.asm;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
 /**
@@ -18,7 +16,10 @@ public class BlockCocoaTransformer implements IClassTransformer, Opcodes{
         if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
         try {
             FarmOptimizeCorePlugin.logger.info("Start " + TARGET_CLASS_NAME + " transform");
-            basicClass = changeConst(basicClass, name);
+            ClassReader classReader = new ClassReader(basicClass);
+            ClassWriter classWriter = new ClassWriter(1);
+            classReader.accept(new CustomVisitor(name,classWriter), 8);
+//            basicClass = changeConst(basicClass, name);
             FarmOptimizeCorePlugin.logger.info("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
             throw new RuntimeException("failed : BlockCocoaTransformer loading", e);
@@ -59,5 +60,40 @@ public class BlockCocoaTransformer implements IClassTransformer, Opcodes{
         }
 
         return bytes;
+    }
+    class CustomVisitor extends ClassVisitor {
+        String owner;
+        public CustomVisitor(String name, ClassVisitor cv) {
+            super(ASM5, cv);
+            owner = name;
+        }
+
+        @Override
+        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+            String deobfMethodName = FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(owner, name, desc);
+            if (deobfMethodName.equals(FarmOptimizeCorePlugin.updateTickMethodObfName)
+                    || deobfMethodName.equals(FarmOptimizeCorePlugin.updateTickMethodDeobfName)) {
+                return new CustomMethodVisitor(this.api, super.visitMethod(access, name, desc, signature, exceptions));
+            }
+            return super.visitMethod(access, name, desc, signature, exceptions);
+        }
+    }
+
+    class CustomMethodVisitor extends MethodVisitor {
+        public CustomMethodVisitor(int api, MethodVisitor mv) {
+            super(api, mv);
+        }
+
+        boolean const5 = false;
+
+        @Override
+        public void visitInsn(int opcode) {
+            if (opcode == ICONST_5 && !const5) {
+                const5 = true;
+                super.visitFieldInsn(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedCocoa", "I");
+                return;
+            }
+            super.visitInsn(opcode);
+        }
     }
 }

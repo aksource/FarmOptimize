@@ -32,6 +32,7 @@ public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
     public static int growSpeedVine;
     public static Logger logger = Logger.getLogger("FarmOptimize");
     public static String updateTickMethodObfName = "func_180650_b";
+    public static String updateTickMethodDeobfName = "updateTick";
 
     @Override
     public String[] getASMTransformerClass() {
@@ -93,8 +94,8 @@ public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
         growSpeedPotato = (growSpeedPotato <0)?0:growSpeedPotato;
         growSpeedSapling = config.get(Configuration.CATEGORY_GENERAL, "growSpeedSapling", 7, "0:noWait  1:fast  7:default, min = 0").getInt();
         growSpeedSapling = (growSpeedSapling <0)?0:growSpeedSapling;
-        MushroomSpeed = config.get(Configuration.CATEGORY_GENERAL, "MushroomSpeed", 25, "0:noWait  1:fast  25:default, min = 0").getInt();
-        MushroomSpeed = (MushroomSpeed <0)?0:MushroomSpeed;
+        MushroomSpeed = config.get(Configuration.CATEGORY_GENERAL, "MushroomSpeed", 25, "1:fast  25:default, min = 1").getInt();
+        MushroomSpeed = (MushroomSpeed <1)?1:MushroomSpeed;
         MushroomLimit = config.get(Configuration.CATEGORY_GENERAL, "MushroomLimit", 5, "area in mushroomLimit  5:default, min = 1, max = 81").getInt();
         MushroomLimit = (MushroomLimit <1)?1:(MushroomLimit>81)?81:MushroomLimit;
         MushroomArea = (byte)config.get(Configuration.CATEGORY_GENERAL, "MushroomArea", 4, "mushroom search area  4:default, min = 0, max = 4").getInt();
@@ -102,8 +103,8 @@ public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
         MushroomAreaMinus = (byte)(MushroomArea * (-1));
         growSpeedNetherWart = config.get(Configuration.CATEGORY_GENERAL, "growSpeedNetherWart", 10, "0:noWait  1:fast  10:default, min = 0").getInt();
         growSpeedNetherWart = (growSpeedNetherWart <0)?0:growSpeedNetherWart;
-        growSpeedCocoa = config.get(Configuration.CATEGORY_GENERAL, "growSpeedCocoa", 5, "0:noWait  1:fast  5:default, min = 0").getInt();
-        growSpeedCocoa = (growSpeedCocoa <0)?0:growSpeedCocoa;
+        growSpeedCocoa = config.get(Configuration.CATEGORY_GENERAL, "growSpeedCocoa", 5, "1:fast  5:default, min = 1").getInt();
+        growSpeedCocoa = (growSpeedCocoa <1)?1:growSpeedCocoa;
         growSpeedVine = config.get(Configuration.CATEGORY_GENERAL, "growSpeedVine", 4, "0:noWait  4:default  -1:noGrow, min = -1").getInt();
         growSpeedVine = (growSpeedVine <-1)?-1:growSpeedVine;
         config.save();
