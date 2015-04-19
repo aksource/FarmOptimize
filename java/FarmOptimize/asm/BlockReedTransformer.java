@@ -15,11 +15,9 @@ public class BlockReedTransformer implements IClassTransformer,Opcodes{
     private static final String TARGET_CLASS_NAME = "net.minecraft.block.BlockReed";
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
+        if (!TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
         try {
-            FarmOptimizeCorePlugin.logger.info("Start " + TARGET_CLASS_NAME + " transform");
             basicClass = changeConst(basicClass, name);
-            FarmOptimizeCorePlugin.logger.info("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
             throw new RuntimeException("failed : BlockReedTransformer loading", e);
         }
@@ -42,7 +40,7 @@ public class BlockReedTransformer implements IClassTransformer,Opcodes{
         }
         if (mnode != null)
         {
-            FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
+            FarmOptimizeCorePlugin.logger.debug("transform updateTick Method");
             AbstractInsnNode oldInsnNode1 = mnode.instructions.get(50);
             AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "SugarcaneLimit", "I");
             mnode.instructions.set(oldInsnNode1, newInsnNode1);

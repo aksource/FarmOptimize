@@ -17,11 +17,9 @@ public class BlockStemTransformer implements IClassTransformer, Opcodes{
     private static final String TARGET_CLASS_NAME = "net.minecraft.block.BlockStem";
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
+        if (!TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
         try {
-            FarmOptimizeCorePlugin.logger.info("Start " + TARGET_CLASS_NAME + " transform");
             basicClass = changeConst(basicClass, name);
-            FarmOptimizeCorePlugin.logger.info("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
             throw new RuntimeException("failed : BlockStemTransformer loading", e);
         }
@@ -44,7 +42,7 @@ public class BlockStemTransformer implements IClassTransformer, Opcodes{
         }
         if (mnode != null)
         {
-            FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
+            FarmOptimizeCorePlugin.logger.debug("transform updateTick Method");
             AbstractInsnNode oldInsnNode1 = mnode.instructions.get(32);
             AbstractInsnNode newInsnNode1 = new LdcInsnNode(0.25F);
             mnode.instructions.set(oldInsnNode1, newInsnNode1);
