@@ -15,11 +15,9 @@ public class BlockReedTransformer implements IClassTransformer,Opcodes{
     private static final String TARGET_CLASS_NAME = "net.minecraft.block.BlockReed";
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
+        if (!TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
         try {
-            FarmOptimizeCorePlugin.logger.info("Start " + TARGET_CLASS_NAME + " transform");
             basicClass = changeConst(basicClass, name);
-            FarmOptimizeCorePlugin.logger.info("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
             throw new RuntimeException("failed : BlockReedTransformer loading", e);
         }

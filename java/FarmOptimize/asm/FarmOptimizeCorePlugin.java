@@ -2,10 +2,11 @@ package FarmOptimize.asm;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import net.minecraftforge.common.config.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Created by A.K. on 14/03/15.
@@ -30,7 +31,7 @@ public class FarmOptimizeCorePlugin implements IFMLLoadingPlugin {
     public static int growSpeedNetherWart;
     public static int growSpeedCocoa;
     public static int growSpeedVine;
-    public static Logger logger = Logger.getLogger("FarmOptimize");
+    public static Logger logger = LogManager.getLogger("FarmOptimize");
     public static String updateTickMethodObfName = "func_180650_b";
     public static String updateTickMethodDeobfName = "updateTick";
 

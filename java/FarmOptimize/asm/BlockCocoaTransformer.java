@@ -13,54 +13,17 @@ public class BlockCocoaTransformer implements IClassTransformer, Opcodes{
     private static final String TARGET_CLASS_NAME = "net.minecraft.block.BlockCocoa";
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (!FMLLaunchHandler.side().isClient() || !TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
+        if (!TARGET_CLASS_NAME.equals(transformedName)) {return basicClass;}
         try {
-            FarmOptimizeCorePlugin.logger.info("Start " + TARGET_CLASS_NAME + " transform");
             ClassReader classReader = new ClassReader(basicClass);
             ClassWriter classWriter = new ClassWriter(1);
             classReader.accept(new CustomVisitor(name,classWriter), 8);
-//            basicClass = changeConst(basicClass, name);
-            FarmOptimizeCorePlugin.logger.info("Finish " + TARGET_CLASS_NAME + " transform");
         } catch (Exception e) {
             throw new RuntimeException("failed : BlockCocoaTransformer loading", e);
         }
         return basicClass;
     }
 
-    private byte[] changeConst(byte[] bytes, String owner) {
-        ClassNode cnode = new ClassNode();
-        ClassReader reader = new ClassReader(bytes);
-        reader.accept(cnode, 0);
-        String targetMethodName = FarmOptimizeCorePlugin.updateTickMethodObfName;//updateTick
-        MethodNode mnode = null;
-        for (MethodNode curMnode :cnode.methods)
-        {
-            if (targetMethodName.equals(FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(owner, curMnode.name, curMnode.desc)))
-            {
-                mnode = curMnode;
-                break;
-            }
-        }
-        if (mnode != null)
-        {
-            FarmOptimizeCorePlugin.logger.info("transform updateTick Method");
-            AbstractInsnNode oldInsnNode1 = mnode.instructions.get(21);//ICONST_5
-            AbstractInsnNode newInsnNode1 = new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedCocoa", "I");
-            mnode.instructions.set(oldInsnNode1, newInsnNode1);
-
-            InsnList insnList = new InsnList();
-            insnList.add(new FieldInsnNode(GETSTATIC, "FarmOptimize/asm/FarmOptimizeCorePlugin", "growSpeedCocoa", "I"));
-            LabelNode label = (LabelNode)mnode.instructions.get(24);//Label 4
-            insnList.add(new JumpInsnNode(IFEQ, label));
-            mnode.instructions.insert(mnode.instructions.get(19), insnList);//After Frame Same
-
-            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-            cnode.accept(cw);
-            bytes = cw.toByteArray();
-        }
-
-        return bytes;
-    }
     class CustomVisitor extends ClassVisitor {
         String owner;
         public CustomVisitor(String name, ClassVisitor cv) {
