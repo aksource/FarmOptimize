@@ -14,12 +14,19 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod(modid="FarmOptimize", name="FarmOptimize", version="@VERSION@",dependencies="required-after:FML", useMetadata = true)
-public class FarmOptimize
-{
-	@Mod.Instance("FarmOptimize")
-	public static FarmOptimize instance;
-	
+@Mod(modid=FarmOptimize.MOD_ID,
+        name=FarmOptimize.MOD_NAME,
+        version=FarmOptimize.MOD_VERSION,
+        dependencies=FarmOptimize.MOD_DEPENDENCIES,
+        useMetadata = true,
+        acceptedMinecraftVersions = FarmOptimize.MOD_MC_VERSION)
+public class FarmOptimize {
+
+    public static final String MOD_ID = "FarmOptimize";
+    public static final String MOD_NAME = "FarmOptimize";
+    public static final String MOD_VERSION = "@VERSION@";
+    public static final String MOD_DEPENDENCIES = "required-after:Forge@[11.14.0.1237,)";
+    public static final String MOD_MC_VERSION = "[1.8,1.8.9]";
 //	public static int SugarcaneSpeed;
 //	public static int SugarcaneLimit;
 	public static boolean SugarcaneGrowWater;
@@ -200,10 +207,10 @@ public class FarmOptimize
     @SubscribeEvent
     public void useBonemealToReeds(BonemealEvent event)
     {
-        if(!event.world.isRemote && event.block == Blocks.reeds && Blocks.reeds.func_176354_d/*canBlockStay*/(event.world, event.pos))
+        if(!event.world.isRemote && event.block == Blocks.reeds && Blocks.reeds.canBlockStay(event.world, event.pos))
         {
             int size;
-            for (size = 0; Blocks.reeds.func_176354_d/*canBlockStay*/(event.world, event.pos.offset(EnumFacing.DOWN, size)); --size)
+            for (size = 0; Blocks.reeds.canBlockStay(event.world, event.pos.offset(EnumFacing.DOWN, size)); --size)
             {
                 ;
             }
